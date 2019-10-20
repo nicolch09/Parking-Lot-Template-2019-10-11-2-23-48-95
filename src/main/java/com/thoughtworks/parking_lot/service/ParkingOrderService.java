@@ -15,7 +15,8 @@ import java.util.List;
 import static java.util.Objects.isNull;
 
 public class ParkingOrderService {
-    private static final String PARKING_LOT_CREATION_ERROR_MESSAGE = "ERROR. Parking Lot Name doesn't exist or no more capacity available";
+    private static final String PARKING_LOT_DOES_NOT_EXIST = "PARKING LOT DOES NOT EXIST";
+    private static final String THE_PARKING_LOT_IS_FULL = "THE PARKING LOT IS FULL";
     private static final String OBJECT_NOT_FOUND = "OBJECT NOT FOUND";
 
     @Autowired
@@ -69,6 +70,7 @@ public class ParkingOrderService {
             foundParkingOrder.setOrderStatus("Closed");
             foundParkingOrder.setCloseTime(getCurrentDateTime());
             foundParkingName.setCapacity(parkingLotCapacity);
+            parkingLotRepository.save(foundParkingName);
             return parkingOrderRepository.save(foundParkingOrder);
         }
         throw new NotFoundException(OBJECT_NOT_FOUND);
@@ -76,10 +78,16 @@ public class ParkingOrderService {
 
     public ParkingOrder saveParkingOrder(ParkingOrder parkingOrder, String name) throws NotFoundException {
         ParkingLot foundParkingName = parkingLotRepository.findOneByName(name);
-        if(!isNull(foundParkingName) && foundParkingName.getCapacity() > 0){
-            return parkingOrderRepository.save(parkingOrder);
+        if(!isNull(foundParkingName)){
+            if(foundParkingName.getCapacity() > 0) {
+                Integer parkingLotCapacity = foundParkingName.getCapacity() - 1;
+                foundParkingName.setCapacity(parkingLotCapacity);
+                parkingLotRepository.save(foundParkingName);
+                return parkingOrderRepository.save(parkingOrder);
+            }
+            throw new NotFoundException(THE_PARKING_LOT_IS_FULL);
         }
-        throw new NotFoundException(PARKING_LOT_CREATION_ERROR_MESSAGE);
+        throw new NotFoundException(PARKING_LOT_DOES_NOT_EXIST);
     }
 
     public String getCurrentDateTime() {
