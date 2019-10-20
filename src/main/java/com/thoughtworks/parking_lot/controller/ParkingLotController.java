@@ -1,6 +1,7 @@
 package com.thoughtworks.parking_lot.controller;
 
 import com.thoughtworks.parking_lot.core.ParkingLot;
+import com.thoughtworks.parking_lot.core.ParkingOrder;
 import com.thoughtworks.parking_lot.service.ParkingLotService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,38 +19,38 @@ public class ParkingLotController {
 
     @GetMapping(value = "/all", produces = {"application/json"})
     @ResponseStatus(code = HttpStatus.OK)
-    public Iterable<ParkingLot> getAll(@RequestParam(required = false, defaultValue = "0") Integer page,
+    public Iterable<ParkingLot> getAllParkingLot(@RequestParam(required = false, defaultValue = "0") Integer page,
                                        @RequestParam(required = false, defaultValue = "15") Integer pageSize) {
-        return parkingLotService.getAll(page, pageSize);
+        return parkingLotService.getAllParkingLot(page, pageSize);
     }
 
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping(path = "/{name}")
-    public ParkingLot get(@PathVariable String name) throws NotFoundException {
-        return parkingLotService.get(name);
+    public ParkingLot getParkingLotByName(@PathVariable String name) throws NotFoundException {
+        return parkingLotService.getParkingLotByName(name);
     }
 
     @ResponseStatus(code = HttpStatus.OK)
     @GetMapping
-    public List<ParkingLot> getSpecific(@RequestParam(required = false) String name) throws NotFoundException {
-        return parkingLotService.getSpecific(name);
+    public List<ParkingLot> getParkingLotLikeName(@RequestParam(required = false) String name) throws NotFoundException {
+        return parkingLotService.getParkingLotLikeName(name);
     }
 
     @ResponseStatus(code = HttpStatus.OK)
     @DeleteMapping(path = "/{name}")
-    public ParkingLot delete(@PathVariable String name) throws NotFoundException {
-        return parkingLotService.delete(name);
+    public ParkingLot deleteParkingLot(@PathVariable String name) throws NotFoundException {
+        return parkingLotService.deleteParkingLot(name);
     }
 
     @ResponseStatus(code = HttpStatus.OK)
     @PatchMapping(path = "/{name}", consumes = "application/json", produces = "application/json")
-    public ParkingLot modify(@RequestBody ParkingLot parkingLot, @PathVariable String name) throws NotFoundException, NotSupportedException {
-        return parkingLotService.modify(parkingLot, name);
+    public ParkingLot modifyParkingLot(@RequestBody ParkingLot parkingLot, @PathVariable String name) throws NotFoundException, NotSupportedException {
+        return parkingLotService.modifyParkingLot(parkingLot, name);
     }
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping(produces = {"application/json"})
-    public ParkingLot add(@RequestBody ParkingLot parkingLot) throws NotFoundException, NotSupportedException {
-        return parkingLotService.add(parkingLot);
+    public ParkingLot saveParkingLot(@RequestBody ParkingLot parkingLot) throws NotFoundException, NotSupportedException {
+        return parkingLotService.saveParkingLot(parkingLot);
     }
 }

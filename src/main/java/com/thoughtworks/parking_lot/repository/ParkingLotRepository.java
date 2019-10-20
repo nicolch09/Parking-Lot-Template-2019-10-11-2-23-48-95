@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface ParkingLotRepository extends JpaRepository<ParkingLot, Long> {
     ParkingLot findOneByName(@Param("name") String name);
-
     List<ParkingLot> findByNameContaining(String name);
 }

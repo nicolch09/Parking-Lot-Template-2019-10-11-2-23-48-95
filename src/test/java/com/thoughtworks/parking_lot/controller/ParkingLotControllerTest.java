@@ -43,7 +43,7 @@ class ParkingLotControllerTest {
 
     @Test
     void should_return_200_with_get_all() throws Exception {
-        when(parkingLotService.getAll(null, null)).thenReturn(Collections.singletonList(createSampleParkingLot()));
+        when(parkingLotService.getAllParkingLot(null, null)).thenReturn(Collections.singletonList(createSampleParkingLot()));
 
         ResultActions result = mvc.perform(get("/parkingLot/all"));
 
@@ -52,7 +52,7 @@ class ParkingLotControllerTest {
 
     @Test
     void should_return_200_with_get_all_with_page() throws Exception {
-        when(parkingLotService.getAll(0, 1)).thenReturn(Collections.singletonList(createSampleParkingLot()));
+        when(parkingLotService.getAllParkingLot(0, 1)).thenReturn(Collections.singletonList(createSampleParkingLot()));
 
         ResultActions result = mvc.perform(get("/parkingLot/all"));
 
@@ -61,7 +61,7 @@ class ParkingLotControllerTest {
 
     @Test
     void should_return_specific_data_when_name_is_sample() throws Exception {
-        when(parkingLotService.get("Sample")).thenReturn(createSampleParkingLot());
+        when(parkingLotService.getParkingLotByName("Sample")).thenReturn(createSampleParkingLot());
 
         ResultActions result = mvc.perform(get("/parkingLot/Sample"));
 
@@ -70,7 +70,7 @@ class ParkingLotControllerTest {
 
     @Test
     void should_return_specific_data_when_name_like_elaine() throws Exception {
-        when(parkingLotService.getSpecific("Elaine")).thenReturn(Arrays.asList(createSampleParkingLot()));
+        when(parkingLotService.getParkingLotLikeName("Elaine")).thenReturn(Arrays.asList(createSampleParkingLot()));
 
         ResultActions result = mvc.perform(get("/parkingLot?name=Elaine"));
 
@@ -79,7 +79,7 @@ class ParkingLotControllerTest {
 
     @Test
     void should_return_200_when_called_delete_with_correct_name() throws Exception {
-        when(parkingLotService.delete("Toper")).thenReturn(createSampleParkingLot());
+        when(parkingLotService.deleteParkingLot("Toper")).thenReturn(createSampleParkingLot());
 
         ResultActions result = mvc.perform(delete("/parkingLot/Toper"));
 
@@ -88,7 +88,7 @@ class ParkingLotControllerTest {
 
     @Test
     void should_modify_parkingLot_when_name_is_correct() throws Exception {
-        when(parkingLotService.modify(any(), anyString())).thenReturn(createSampleParkingLot());
+        when(parkingLotService.modifyParkingLot(any(), anyString())).thenReturn(createSampleParkingLot());
 
         ResultActions result = mvc.perform(get("/parkingLot/" + any()));
 
@@ -97,7 +97,7 @@ class ParkingLotControllerTest {
 
     @Test
     void should_return_201_when_parkingLot_is_created() throws Exception {
-        when(parkingLotService.add(createSampleParkingLot())).thenReturn(createSampleParkingLot());
+        when(parkingLotService.saveParkingLot(createSampleParkingLot())).thenReturn(createSampleParkingLot());
 
         ResultActions result = mvc.perform(post("/parkingLot")
                 .contentType(MediaType.APPLICATION_JSON)
