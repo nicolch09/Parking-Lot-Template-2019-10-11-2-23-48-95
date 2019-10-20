@@ -68,7 +68,7 @@ public class ParkingLotService {
     public ParkingLot saveParkingLot(ParkingLot parkingLot) throws NotSupportedException {
         ParkingLot foundName = parkingLotRepository.findOneByName(parkingLot.getName());
         if(isNull(foundName)) {
-            if(foundName.getCapacity() > 0) {
+            if(parkingLot.getCapacity() > 0) {
                 return parkingLotRepository.save(parkingLot);
             }
             throw new NotSupportedException(INVALID_CAPACITY);

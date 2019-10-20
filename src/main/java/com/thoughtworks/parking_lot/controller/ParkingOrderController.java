@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/parkingOrder")
 public class ParkingOrderController {
@@ -23,21 +21,9 @@ public class ParkingOrderController {
     }
 
     @ResponseStatus(code = HttpStatus.OK)
-    @GetMapping(path = "/{orderNumber}")
-    public ParkingOrder getParkingOrderByOrderNumber(@PathVariable Long orderNumber) throws NotFoundException {
-        return parkingOrderService.getParkingOrderByOrderNumber(orderNumber);
-    }
-
-    @ResponseStatus(code = HttpStatus.OK)
-    @GetMapping(path = "/{name}")
-    public ParkingOrder getParkingOrderByName(@PathVariable String name) throws NotFoundException {
-        return parkingOrderService.getParkingOrderByName(name);
-    }
-
-    @ResponseStatus(code = HttpStatus.OK)
     @GetMapping
-    public List<ParkingOrder> getParkingOrderLikeName(@RequestParam(required = false) String name) throws NotFoundException {
-        return parkingOrderService.getParkingLotLikeName(name);
+    public ParkingOrder getParkingOrderByOrderNumber(@RequestParam(required = false) Long orderNumber) throws NotFoundException {
+        return parkingOrderService.getParkingOrderByOrderNumber(orderNumber);
     }
 
     @ResponseStatus(code = HttpStatus.OK)

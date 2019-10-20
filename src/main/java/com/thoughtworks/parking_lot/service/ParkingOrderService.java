@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import static java.util.Objects.isNull;
 
@@ -22,6 +21,7 @@ public class ParkingOrderService {
     private static final String OBJECT_NOT_FOUND = "OBJECT NOT FOUND";
     private static final String PLATE_NUMBER_EXISTS = "PLATE NUMBER EXISTS";
     private static final String ORDER_NUMBER_ALREADY_CLOSED = "ORDER NUMBER ALREADY CLOSED";
+    private static final String CANNOT_DELETE_ORDER_SINCE_ORDER_STATUS_IS_OPEN = "CANNOT DELETE ORDER SINCE ORDER STATUS IS OPEN";
 
     @Autowired
     ParkingOrderRepository parkingOrderRepository;
@@ -35,24 +35,8 @@ public class ParkingOrderService {
 
     public ParkingOrder getParkingOrderByOrderNumber(Long orderNumber) throws NotFoundException {
         ParkingOrder parkingOrder = parkingOrderRepository.findOneByOrderNumber(orderNumber);
-        if (parkingOrder != null) {
+        if (!isNull(parkingOrder)) {
             return parkingOrder;
-        }
-        throw new NotFoundException(OBJECT_NOT_FOUND);
-    }
-
-    public ParkingOrder getParkingOrderByName(String name) throws NotFoundException {
-        ParkingOrder parkingOrder = parkingOrderRepository.findOneByName(name);
-        if (parkingOrder != null) {
-            return parkingOrder;
-        }
-        throw new NotFoundException(OBJECT_NOT_FOUND);
-    }
-
-    public List<ParkingOrder> getParkingLotLikeName(String name) throws NotFoundException {
-        List<ParkingOrder> parkingOrder = parkingOrderRepository.findByNameContaining(name);
-        if (parkingOrder.size() != 0) {
-            return parkingOrderRepository.findByNameContaining(name);
         }
         throw new NotFoundException(OBJECT_NOT_FOUND);
     }
@@ -60,8 +44,11 @@ public class ParkingOrderService {
     public ParkingOrder deleteParkingOrder(Long orderNumber) throws NotFoundException {
         ParkingOrder parkingOrder = parkingOrderRepository.findOneByOrderNumber(orderNumber);
         if (!isNull(parkingOrder)) {
-            parkingOrderRepository.delete(parkingOrder);
-            return parkingOrder;
+            if(parkingOrder.getCloseTime() != null) {
+                parkingOrderRepository.delete(parkingOrder);
+                return parkingOrder;
+            }
+            throw new NotFoundException(CANNOT_DELETE_ORDER_SINCE_ORDER_STATUS_IS_OPEN);
         }
         throw new NotFoundException(OBJECT_NOT_FOUND);
     }
@@ -69,7 +56,7 @@ public class ParkingOrderService {
     public ParkingOrder setParkingOrderStatusAsClosed(Long orderNumber) throws NotFoundException {
         ParkingOrder foundParkingOrder = parkingOrderRepository.findOneByOrderNumber(orderNumber);
         if (!isNull(foundParkingOrder)) {
-            if(foundParkingOrder.getOrderStatus() != null) {
+            if(foundParkingOrder.getCloseTime() == null) {
                 ParkingLot foundParkingName = parkingLotRepository.findOneByName(foundParkingOrder.getName());
                 Integer parkingLotCapacity = foundParkingName.getCapacity() + 1;
                 foundParkingOrder.setOrderStatus("Closed");
@@ -106,7 +93,7 @@ public class ParkingOrderService {
 
     public String getCurrentDateTime() {
         LocalDateTime myDateObj = LocalDateTime.now();
-        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+        DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm:ss");
         return myDateObj.format(myFormatObj);
     }
 }

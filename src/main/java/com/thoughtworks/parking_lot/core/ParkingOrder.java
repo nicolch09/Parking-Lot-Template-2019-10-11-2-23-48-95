@@ -14,6 +14,18 @@ public class ParkingOrder {
     private String closeTime;
     private String orderStatus;
 
+    public ParkingOrder() {
+    }
+
+    public ParkingOrder(Long orderNumber, String name, String plateNumber, String creationTime, String closeTime, String orderStatus) {
+        this.orderNumber = orderNumber;
+        this.name = name;
+        this.plateNumber = plateNumber;
+        this.creationTime = creationTime;
+        this.closeTime = closeTime;
+        this.orderStatus = orderStatus;
+    }
+
     public Long getOrderNumber() {
         return orderNumber;
     }

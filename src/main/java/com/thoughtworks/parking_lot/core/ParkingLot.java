@@ -1,9 +1,12 @@
 package com.thoughtworks.parking_lot.core;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 
 @Entity
+@JsonIgnoreProperties(value = {"id"})
 public class ParkingLot {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -13,13 +16,14 @@ public class ParkingLot {
     private Integer capacity;
     private String location;
 
-    public ParkingLot(String name, Integer capacity, String location) {
+    public ParkingLot() {
+    }
+
+    public ParkingLot(Long id, String name, Integer capacity, String location) {
+        this.id = id;
         this.name = name;
         this.capacity = capacity;
         this.location = location;
-    }
-
-    public ParkingLot() {
     }
 
     public Long getId() {
