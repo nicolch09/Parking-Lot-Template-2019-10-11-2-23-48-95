@@ -7,6 +7,7 @@ import com.thoughtworks.parking_lot.repository.ParkingOrderRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -14,10 +15,13 @@ import java.util.List;
 
 import static java.util.Objects.isNull;
 
+@Service
 public class ParkingOrderService {
     private static final String PARKING_LOT_DOES_NOT_EXIST = "PARKING LOT DOES NOT EXIST";
     private static final String THE_PARKING_LOT_IS_FULL = "THE PARKING LOT IS FULL";
     private static final String OBJECT_NOT_FOUND = "OBJECT NOT FOUND";
+    private static final String PLATE_NUMBER_EXISTS = "PLATE NUMBER EXISTS";
+    private static final String ORDER_NUMBER_ALREADY_CLOSED = "ORDER NUMBER ALREADY CLOSED";
 
     @Autowired
     ParkingOrderRepository parkingOrderRepository;
@@ -65,13 +69,16 @@ public class ParkingOrderService {
     public ParkingOrder setParkingOrderStatusAsClosed(Long orderNumber) throws NotFoundException {
         ParkingOrder foundParkingOrder = parkingOrderRepository.findOneByOrderNumber(orderNumber);
         if (!isNull(foundParkingOrder)) {
-            ParkingLot foundParkingName = parkingLotRepository.findOneByName(foundParkingOrder.getName());
-            Integer parkingLotCapacity = foundParkingName.getCapacity() + 1;
-            foundParkingOrder.setOrderStatus("Closed");
-            foundParkingOrder.setCloseTime(getCurrentDateTime());
-            foundParkingName.setCapacity(parkingLotCapacity);
-            parkingLotRepository.save(foundParkingName);
-            return parkingOrderRepository.save(foundParkingOrder);
+            if(foundParkingOrder.getOrderStatus() != null) {
+                ParkingLot foundParkingName = parkingLotRepository.findOneByName(foundParkingOrder.getName());
+                Integer parkingLotCapacity = foundParkingName.getCapacity() + 1;
+                foundParkingOrder.setOrderStatus("Closed");
+                foundParkingOrder.setCloseTime(getCurrentDateTime());
+                foundParkingName.setCapacity(parkingLotCapacity);
+                parkingLotRepository.save(foundParkingName);
+                return parkingOrderRepository.save(foundParkingOrder);
+            }
+            throw new NotFoundException(ORDER_NUMBER_ALREADY_CLOSED);
         }
         throw new NotFoundException(OBJECT_NOT_FOUND);
     }
@@ -80,10 +87,17 @@ public class ParkingOrderService {
         ParkingLot foundParkingName = parkingLotRepository.findOneByName(name);
         if(!isNull(foundParkingName)){
             if(foundParkingName.getCapacity() > 0) {
-                Integer parkingLotCapacity = foundParkingName.getCapacity() - 1;
-                foundParkingName.setCapacity(parkingLotCapacity);
-                parkingLotRepository.save(foundParkingName);
-                return parkingOrderRepository.save(parkingOrder);
+                ParkingOrder foundPlateNumber = parkingOrderRepository.findOneByPlateNumber(parkingOrder.getPlateNumber());
+                if(isNull(foundPlateNumber)) {
+                    Integer parkingLotCapacity = foundParkingName.getCapacity() - 1;
+                    foundParkingName.setCapacity(parkingLotCapacity);
+                    parkingOrder.setName(name);
+                    parkingOrder.setCreationTime(getCurrentDateTime());
+                    parkingOrder.setOrderStatus("Open");
+                    parkingLotRepository.save(foundParkingName);
+                    return parkingOrderRepository.save(parkingOrder);
+                }
+                throw new NotFoundException(PLATE_NUMBER_EXISTS);
             }
             throw new NotFoundException(THE_PARKING_LOT_IS_FULL);
         }
