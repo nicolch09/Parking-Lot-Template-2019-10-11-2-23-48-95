@@ -1,7 +1,6 @@
 package com.thoughtworks.parking_lot.controller;
 
 import com.thoughtworks.parking_lot.core.ParkingLot;
-import com.thoughtworks.parking_lot.core.ParkingOrder;
 import com.thoughtworks.parking_lot.service.ParkingLotService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class ParkingLotController {
 
     @ResponseStatus(code = HttpStatus.CREATED)
     @PostMapping(produces = {"application/json"})
-    public ParkingLot saveParkingLot(@RequestBody ParkingLot parkingLot) throws NotFoundException, NotSupportedException {
+    public ParkingLot saveParkingLot(@RequestBody ParkingLot parkingLot) throws NotSupportedException {
         return parkingLotService.saveParkingLot(parkingLot);
     }
 }

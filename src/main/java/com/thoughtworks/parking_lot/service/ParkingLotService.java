@@ -1,7 +1,6 @@
 package com.thoughtworks.parking_lot.service;
 
 import com.thoughtworks.parking_lot.core.ParkingLot;
-import com.thoughtworks.parking_lot.core.ParkingOrder;
 import com.thoughtworks.parking_lot.repository.ParkingLotRepository;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +18,8 @@ public class ParkingLotService {
     private ParkingLotRepository parkingLotRepository;
 
     private static final String OBJECT_NOT_FOUND = "OBJECT NOT FOUND";
-    private static final String ADDING_EXCEPTION = "NAME ALREADY EXISTS OR INVALID CAPACITY";
     private static final String INVALID_CAPACITY = "INVALID CAPACITY";
+    private static final String PARKING_NAME_ALREADY_EXISTS = "PARKING NAME ALREADY EXISTS";
 
     public Iterable<ParkingLot> getAllParkingLot(Integer page, Integer pageSize) {
         return parkingLotRepository.findAll(PageRequest.of(page, pageSize));
@@ -68,9 +67,12 @@ public class ParkingLotService {
 
     public ParkingLot saveParkingLot(ParkingLot parkingLot) throws NotSupportedException {
         ParkingLot foundName = parkingLotRepository.findOneByName(parkingLot.getName());
-        if(isNull(foundName) && parkingLot.getCapacity() > 0){
-            return parkingLotRepository.save(parkingLot);
+        if(isNull(foundName)) {
+            if(foundName.getCapacity() > 0) {
+                return parkingLotRepository.save(parkingLot);
+            }
+            throw new NotSupportedException(INVALID_CAPACITY);
         }
-        throw new NotSupportedException(ADDING_EXCEPTION);
+        throw new NotSupportedException(PARKING_NAME_ALREADY_EXISTS);
     }
 }
