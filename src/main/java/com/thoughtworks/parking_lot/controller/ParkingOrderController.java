@@ -1,15 +1,12 @@
 package com.thoughtworks.parking_lot.controller;
 
-import com.thoughtworks.parking_lot.core.ParkingLot;
 import com.thoughtworks.parking_lot.core.ParkingOrder;
-import com.thoughtworks.parking_lot.service.ParkingLotService;
 import com.thoughtworks.parking_lot.service.ParkingOrderService;
 import javassist.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.transaction.NotSupportedException;
 import java.util.List;
 
 @RestController
